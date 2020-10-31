@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jyväskylä lentoasema sää</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h2>Jyväskylä lentoasema</h2>
+    <h3>Lämpötila ja tuulennopeus</h3>
+    <div id="test"></div>
+    <h3>Näkyvyys (km)</h3>
+    <div id="test2"></div>
+
+    <script>
+                var trace1 = {
+                        x: [],
+                        y: [],
+                        name: 'Temp',
+                        type: 'bar',
+                        fill: 'tozeroy'
+                        };
+                var trace2 = {
+                        x: [],
+                        y: [],
+                        name: 'WindSpeed',
+                        type: 'bar',
+                        fill: 'tonexty'
+                        };
+                var trace3 = {
+                        x: [],
+                        y: [],
+                        name: 'Visibility',
+                        type: 'bar'
+
+                        };
+
+        var layout = {tickwidth:5};
+        var config = {responsive: true};
+
+                function getSensorData() {
+                    x = [], y1 = [], y2 =[], y3=[];
+                $.ajax({
+                    dataType: 'json',
+                    type: 'GET',
+                    url: './reload',
+                    success: function(data){
+                        var sensorDataArr = data, x = [], temp = [], windspeed = [], visibility = [], measuretime = [];
+                        sensorDataArr.forEach(function(e){
+                             x.push(e.measuretime);
+                             y1.push(e.temp);
+                             y2.push(e.windspeed);
+                             y3.push(e.visibility);
+                                console.log(e.timestamp);
+                                console.log("measureTime: ",e.measuretime);
+                                console.log(e.temp);
+                        });
+
+                        trace1.x = x;
+                        trace1.y = y1;
+                        trace2.x = x;
+                        trace2.y = y2;
+                        trace3.x = x;
+                        trace3.y = y3;
+                        var dataFinal = [ trace2, trace1];
+                                                Plotly.newPlot('test', dataFinal, layout,  config);
+                        var dataFinal2 = [trace3];
+                                                Plotly.newPlot('test2',dataFinal2, config);
+
+                    }
+                });
+            };
+            setInterval(function() {
+                getSensorData();
+            }, 1000);
+
+    </script>
+</body>
+</html>
+

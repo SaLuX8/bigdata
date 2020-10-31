@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plotly</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div id="test"></div>
+    <script>
+                var trace1 = {
+                        x: [],
+                        y: [],
+                        name: 'avgTemp',
+                        type: 'scatter'
+                        };
+                var trace2 = {
+                        x: [],
+                        y: [],
+                        name: 'minTemp',
+                        type: 'bar'
+                        };
+                var trace3 = {
+                        x: [],
+                        y: [],
+                        name: 'maxTemp',
+                        type: 'scatter'
+                        };
+
+        var layout = { barmode: 'group'};
+        var config = {responsive: true};
+        //TESTER = document.getElementById('test');
+
+                function getSensorData() {
+                x = [], y1 = [], y2 =[], y3=[];
+                $.ajax({
+                    dataType: 'json',
+                    type: 'GET',
+                    url: './reload',
+                    success: function(data){
+                        var sensorDataArr = data, x = [], avgTemp = [], minTemp = [], maxTemp = [];
+                        sensorDataArr.forEach(function(e){
+                             x.push(e.timestamp.getHours());
+                             y1.push(e.temp);
+                             y2.push(e.windspeed);
+                             y3.push(e.visibility);
+                        });
+                        trace1.x = x;
+                        trace1.y = y1;
+                        trace2.x = x;
+                        trace2.y = y2;
+                        trace3.x = x;
+                        trace3.y = y3;
+                        var dataFinal = [ trace2, trace1, trace3];
+						Plotly.newPlot('test', dataFinal, layout, config);
+                    }
+                });
+            };
+            setInterval(function() {
+                getSensorData();
+            }, 500);
+
+    </script>
+</body>
+</html>
